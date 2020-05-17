@@ -40,11 +40,11 @@ class Editor():
         # Bind all shortcuts
         self.bind_keys()
 
-        self.status_bar.label.after(50, self.update_status_bar)
+        self.status_bar.label.after(20, self.update_status_bar)
 
     def update_status_bar(self):
         self.status_bar.update_line_count()
-        self.status_bar.label.after(50, self.update_status_bar)
+        self.status_bar.label.after(20, self.update_status_bar)
 
     def window_title(self, name=None):
         if name:
@@ -78,7 +78,7 @@ class Editor():
                 textarea_content = self.textarea.get(1.0, tk.END)
                 with open(self.filepath, 'w') as file:
                     file.write(textarea_content)
-                self.status_bar.update_status(True)
+                self.status_bar.update_saved_status(True)
             except Exception as e:
                 print(e)
         else: # If there is not then the user will need to save as
@@ -94,7 +94,7 @@ class Editor():
             file.write(textarea_content) # Write the content in text area to it
         self.filepath = save_file # Names the file the name the user specified
         self.window_title(self.filepath) # Resets the system title of the app to the name of the file
-        self.status_bar.update_status(True)
+        self.status_bar.update_saved_status(True)
 
     def exit_app(self, *args):
         exit_prompt = tk.Tk()
@@ -152,4 +152,4 @@ Ctrl+Shift+H | Opens the user guide.
         self.textarea.bind('<Control-L>', self.display_shortcuts)
         self.textarea.bind('<Control-H>', self.display_guide)
         self.textarea.bind('<Control-R>', self.run)
-        self.textarea.bind('<Key>', self.status_bar.update_status)
+        self.textarea.bind('<Key>', self.status_bar.update_saved_status)
