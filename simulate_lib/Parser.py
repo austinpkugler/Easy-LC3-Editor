@@ -148,8 +148,6 @@ class AsmParser:
                 instruction.imm5 = str(int(binary_string[11:], 2))
             else: #not immediate mode
                 instruction.SR2 = "R" + str(int(binary_string[13:], 2))
-
-
         elif binary_string[0:4] == "0101":
             instruction.name = "AND"
             instruction.DR = "R" + str(int(binary_string[4:7], 2))
@@ -158,10 +156,11 @@ class AsmParser:
                 instruction.imm5 = str(int(binary_string[11:], 2))
             else: #not immediate mode
                 instruction.SR2 = "R" + str(int(binary_string[13:], 2))
-
         # converts all BRs
+
+        # Austin doesnt really think the part bELow this workssss
         elif binary_string[0:4] == "0000"
-            instruction.name = "BR"
+            instruction.name = "BR" 
             if 'N' in instruction.name or instruction.name == 'BR':
                 instruction.name += "N"
             if 'Z' in instruction.name:
@@ -169,60 +168,55 @@ class AsmParser:
             if 'P' in instruction.name
                 instruction.name = "P"
             instruction.PCoffset9 = str(int(binary_string[7:], 2))
-        
         elif binary_string[0:4] == "1100"
             instruction.name = "JMP"
             instruction.BaseR = str(int(binary_string[7:10], 2))
-
-        elif binary_string[0:4] == "1100"
+        elif binary_string[0:4] == "0100"
             instruction.name = "JSR"
             instruction.PCoffset11 = str(int(binary_string[5:], 2))
-        elif binary_string[0:4] == "1100"
+
+        #idk how u doin JSRR so ill leTchU Take dis 1
+        elif binary_string[0:4] == "0100"
             binary_string = "0100"
             binary_string += "000"
             binary_string += f"{int(instruction.BaseR[1]):b}"
             binary_string += "000000"
-        elif "LD" == instruction.name:
-            binary_string == "0010"
-            binary_string += f"{int(instruction.DR[1]):b}"
-            binary_string += f"{int(instruction.PCoffset9):b}"
-        elif "LDI" == instruction.name:
-            binary_string = "1010"
-            binary_string += f"{int(instruction.DR[1]):b}"
-            binary_string += f"{int(instruction.PCoffset9):b}"
-        elif "LDR" == instruction.name:
-            binary_string = "0110"
-            binary_string += f"{int(instruction.DR[1]):b}"
-            binary_string += f"{int(instruction.BaseR[1]):b}"
-            binary_string += f"{int(instruction.offset6):b}"
-        elif "LEA" == instruction.name:
-            binary_string = "1110"
-            binary_string += f"{int(instruction.DR[1]):b}"
-            binary_string += f"{int(instruction.PCoffset9):b}"
-        elif "NOT" == instruction.name:
-            binary_string = "1001"
-            binary_string += f"{int(instruction.DR[1]):b}"
-            binary_string += f"{int(instruction.SR[1]):b}"
-            binary_string += "111111"
-        elif "RET" == instruction.name:
-            binary_string = "1100"
-            binary_string += "000111000000"
-        elif "RTI" == instruction.name:
-            binary_string = "1000"
-            binary_string += "000000000000"
-        elif "ST" == instruction.name:
-            binary_string = "0011"
-            binary_string += f"{int(instruction.SR[1]):b}"
-            binary_string += f"{int(instruction.PCoffset9):b}"
-        elif "STI" == instruction.name:
-            binary_string = "1011"
-            binary_string += f"{int(instruction.SR[1]):b}"
-            binary_string += f"{int(instruction.PCoffset9):b}"
-        elif "STR" == instruction.name:
-            binary_string = "0111"
-            binary_string += f"{int(instruction.SR[1]):b}"
-            binary_string += f"{int(instruction.BaseR[1]):b}"
-            binary_string += f"{int(instruction.offset6):b}"
+
+        # Austin hopes he didnt fuck up anything starting here but knows if he
+        # did it isnt that big of a deal
+        elif binary_string[0:4] == "0010":
+            instruction.name = "LD"
+            
+        elif binary_string[0:4] == "1010":
+            instruction.name = "LDI"
+            
+        elif binary_string[0:4] == "0110":
+            instruction.name = "LDR"
+            
+        elif binary_string[0:4] == "1110":
+            instruction.name = "LEA"
+            
+        elif binary_string[0:4] == "1001":
+            instruction.name = "NOT"
+            
+        elif binary_string[0:4] == "1100":
+            instruction.name = "RET"
+            
+        elif binary_string[0:4] == "1000":
+            instruction.name = "RTI"
+            
+        elif binary_string[0:4] == "0011":
+            instruction.name = "ST"
+            
+        elif binary_string[0:4] == "1011":
+            instruction.name = "STI"
+            
+        elif binary_string[0:4] == "0111":
+            instruction.name = "STR"
+            
+
+
+        # Austin didnt read anything below this
         else:
             binary_string = "1111"
             binary_string += "0000"
@@ -262,6 +256,7 @@ class AsmParser:
     def calculate_instruction(self, instruction):
     
 
+    
     def add_instruction(self, instruction):
         pass
 
