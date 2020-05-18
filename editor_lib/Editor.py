@@ -5,13 +5,14 @@ from tkinter import messagebox
 
 from editor_lib.MenuBar import Menubar
 from editor_lib.StatusBar import StatusBar
+from simulate_lib.Simulate import Simulate
 
 # Class for the text area and scroll bars
 class Editor():
 
     def __init__(self, master):
         # Font variables for main text area
-        self.font_specs = ('Source Code Pro', 14)
+        font_specs = ('Source Code Pro', 14)
 
         # Master window variables
         master.title('Easy LC3 Editor') # Sets the system tab title
@@ -22,7 +23,7 @@ class Editor():
         self.filepath = None # Name of the file currently being accessed
 
         # Text area variables
-        self.textarea = tk.Text(master, font=self.font_specs) # Creates the text area the user edits in and sets the font
+        self.textarea = tk.Text(master, font=font_specs) # Creates the text area the user edits in and sets the font
         self.textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True) # The textarea is blitted and expands to both the x and y axis as much as possible
 
         # Scroll bar variables (y-axis)
@@ -55,12 +56,22 @@ class Editor():
             self.master.title('Untitled - Easy LC3 Editor')
 
     def new_file(self, *args): # *args is to prevent an error where uneeded parameters are passed to the methods
-        self.textarea.delete(1.0, tk.END) # Delete the entirety of the current text in the text area
-        self.filepath = None # Resets the filename variable to None, as no filename is currently open or in use
-        self.window_title() # Reset the system title of the window to untitled
+        exit_prompt = tk.Tk()
+        exit_prompt.eval('tk::PlaceWindow %s Center' % exit_prompt.winfo_toplevel())
+        exit_prompt.withdraw()
+        if messagebox.askyesno('Easy LC3 Editor', 'Do you want to save before creating a new file?', icon='warning') == True:
+            self.save_file()
+            self.textarea.delete(1.0, tk.END) # Delete the entirety of the current text in the text area
+            self.filepath = None # Resets the filename variable to None, as no filename is currently open or in use
+            self.window_title() # Reset the system title of the window to untitled
+        else:
+            self.textarea.delete(1.0, tk.END) # Delete the entirety of the current text in the text area
+            self.filepath = None # Resets the filename variable to None, as no filename is currently open or in use
+            self.window_title() # Reset the system title of the window to untitled
 
     def run(self, *args):
-        print("Test")
+        run_asm = Simulate(self.filepath)
+        run_asm.run()
 
     def open_file(self, *args):
         self.filepath = filedialog.askopenfilename( # Sets the filename equal to the filepath of the file the user navigates to in their systems file explorer
@@ -82,7 +93,7 @@ class Editor():
             except Exception as e:
                 print(e)
         else: # If there is not then the user will need to save as
-            self.save_as()
+            self.save_as_file()
 
     def save_as_file(self, *args):
         try:
@@ -102,16 +113,16 @@ class Editor():
         exit_prompt.withdraw()
         if messagebox.askyesno('Easy LC3 Editor', 'Do you want to save before exiting?', icon='warning') == True:
             self.save_file()
-            master.destroy()
+            self.master.destroy()
         else:
-            master.destroy()
+            self.master.destroy()
 
     def display_shortcuts(self, *args):
-        self.font_specs = ('Times', 16)
+        font_specs = ('Times', 16)
         shortcuts_window = tk.Tk()
         shortcuts_window.geometry('1200x700')
         shortcuts_window.title('Shortcuts')
-        shortcuts_textarea = tk.Text(shortcuts_window, font=self.font_specs) 
+        shortcuts_textarea = tk.Text(shortcuts_window, font=font_specs)
         shortcuts_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         shortcuts_textarea.tag_configure('bold', font='Times 16 bold')
         shortcuts_textarea.insert(1.0, 'Shortcuts List', 'bold')
@@ -128,20 +139,36 @@ Ctrl+Shift+H | Opens the user guide.
         shortcuts_window.mainloop()
 
     def display_guide(self, *args):
-        self.font_specs = ('Times', 16)
+        font_specs = ('Times', 16)
         guide_window = tk.Tk()
         guide_window.geometry('1200x700')
         guide_window.title('User Guide')
-        guide_textarea = tk.Text(guide_window, font=self.font_specs)
-        guide_textarea.tag_configure('bold', font='Times 16 bold')
-        guide_textarea.insert(1.0, 'User Guide', 'bold')
-        guide_textarea.insert(2.0, 'Text goes here')
-        guide_textarea.insert(10.0, 'Other title', 'bold')
-        guide_textarea.insert(11.0, 'other text')
+        guide_textarea = tk.Text(guide_window, font=font_specs)
+        guide_textarea.tag_configure('heading1', font='Times 16 bold')
+        guide_textarea.insert(1.0, 'User Guide', 'heading1')
+        guide_textarea.insert(2.0, '''
+The Easy LC3 Editor allows Little Computer 3 assembly language to be written and interpreted, with a few key differences. One such
+difference is the removal of the .ORIG and .END statements from the LC-3 syntax. Instead, programs simulated with the Editor always
+originate at address x3000 and the simulator will interpret the entirety of the .asm file as LC-3 code. There is a minor syntax difference
+from traditional LC-3 when using TRAP instructions. Instead of writing TRAP xnn, users should instead write TRAPxnn. For example, a call to
+trap 23 should be written as TRAPx23. Another key difference is the ability to have immediate values of sizes unrestricted by low bit
+allocations. Finally, the use of labels is not implemented; instead, immediate values can be used in their place due to their unrestricted size.''')
         guide_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def display_about(self):
-        self.font_specs = ('Times', 16)
+        font_specs = ('Times', 16)
+        about_window = tk.Tk()
+        about_window.geometry('1200x700')
+        about_window.title('About')
+        about_textarea = tk.Text(about_window, font=font_specs)
+        about_textarea.tag_configure('heading1', font='Times 16 bold')
+        about_textarea.insert(1.0, 'About', 'heading1')
+        about_textarea.insert(2.0, '''
+The Easy LC3 Editor was created as a final project for CS-155 at North Idaho College by Austin Kugler and Hayden Carroll. It is written
+in Python 3 and utilizes the Tkinter graphics library for the frontend. The Easy LC3 Editor allows full editing of Little Computer 3 assembly
+language files. Additionally, LC3 assembly can be simulated directly from the editor via an interpreter also developed in Python 3. The
+interpreter includes a virtual implementation of memory.''')
+        about_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def bind_keys(self):
         self.textarea.bind('<Control-n>', self.new_file)
@@ -151,5 +178,5 @@ Ctrl+Shift+H | Opens the user guide.
         self.textarea.bind('<Control-X>', self.exit_app)
         self.textarea.bind('<Control-L>', self.display_shortcuts)
         self.textarea.bind('<Control-H>', self.display_guide)
-        self.textarea.bind('<Control-R>', self.run)
+        self.textarea.bind('<Control-r>', self.run)
         self.textarea.bind('<Key>', self.status_bar.update_saved_status)

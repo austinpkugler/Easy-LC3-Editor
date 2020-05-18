@@ -1,8 +1,8 @@
 import sys
 
-import Getch
-from instruction import Instruction
-from signed_binary import SignedBinary
+from simulate_lib import Getch
+from simulate_lib.instruction import Instruction
+from simulate_lib.signed_binary import SignedBinary
 
 class Simulate:
     def __init__(self, fileName):
@@ -24,14 +24,16 @@ class Simulate:
         self.fileName = fileName
         self.STARTING_ADDRESS = int("3000", 16)
         self.program_counter = self.STARTING_ADDRESS
+        self.halt = False
 
         self.convert_file_to_memory()
 
 
     def read_in_file(self):
         with open(self.fileName) as file: #opens file
-            lines = file.readlines() #reads in file into lines
-        lines = [x.rstrip() for x in lines] # removes \n after each line
+            lines = file.read().strip().split('\n') #reads in file into lines
+        lines = [self.remove_comment(x.rstrip()) for x in lines] # removes \n after each line
+        lines = [x for x in lines if x != '']
         return lines
 
     def populate_addresses(self):
@@ -51,7 +53,7 @@ class Simulate:
             binary_string += f"{int(instruction.SR1[1]):b}".zfill(3)
             if instruction.SR2 == "": # is immediate add mode
                 binary_string += "1"
-                binary_string += f"{int(instruction.imm5):b}".zfill(5)
+                binary_string += f"{instruction.imm5.to_integer():b}".zfill(5)
             else:
                 binary_string += "000"
                 binary_string += f"{int(instruction.SR2[1]):b}".zfill(3)
@@ -71,7 +73,7 @@ class Simulate:
                 binary_string += '1'
             else:
                 binary_string += '0'
-            binary_string += f"{int(instruction.PCoffset9):b}".zfill(9)
+            binary_string += f"{instruction.PCoffset9.to_integer():b}".zfill(9)
         
         elif 'JMP' == instruction.name:
             binary_string = "1100"
@@ -81,7 +83,7 @@ class Simulate:
         elif 'JSR' == instruction.name:
             binary_string = "0100"
             binary_string += "1"
-            binary_string += f"{int(instruction.PCoffset11):b}".zfill(11)
+            binary_string += f"{instruction.PCoffset11.to_integer():b}".zfill(11)
         elif 'JSRR' == instruction.name:
             binary_string = "0100"
             binary_string += "000"
@@ -90,20 +92,20 @@ class Simulate:
         elif "LD" == instruction.name:
             binary_string == "0010"
             binary_string += f"{int(instruction.DR[1]):b}".zfill(3)
-            binary_string += f"{int(instruction.PCoffset9):b}".zfill(9)
+            binary_string += f"{instruction.PCoffset9.to_integer():b}".zfill(9)
         elif "LDI" == instruction.name:
             binary_string = "1010"
             binary_string += f"{int(instruction.DR[1]):b}".zfill(3)
-            binary_string += f"{int(instruction.PCoffset9):b}".zfill(9)
+            binary_string += f"{instruction.PCoffset9.to_integer():b}".zfill(9)
         elif "LDR" == instruction.name:
             binary_string = "0110"
             binary_string += f"{int(instruction.DR[1]):b}".zfill(3)
             binary_string += f"{int(instruction.BaseR[1]):b}".zfill(3)
-            binary_string += f"{int(instruction.offset6):b}".zfill(6)
+            binary_string += f"{instruction.offset6.to_integer():b}".zfill(6)
         elif "LEA" == instruction.name:
             binary_string = "1110"
             binary_string += f"{int(instruction.DR[1]):b}".zfill(3)
-            binary_string += f"{int(instruction.PCoffset9):b}".zfill(9)
+            binary_string += f"{instruction.PCoffset9.to_integer():b}".zfill(9)
         elif "NOT" == instruction.name:
             binary_string = "1001"
             binary_string += f"{int(instruction.DR[1]):b}".zfill(3)
@@ -118,16 +120,16 @@ class Simulate:
         elif "ST" == instruction.name:
             binary_string = "0011"
             binary_string += f"{int(instruction.SR[1]):b}".zfill(3)
-            binary_string += f"{int(instruction.PCoffset9):b}".zfill(9)
+            binary_string += f"{instruction.PCoffset9.to_integer():b}".zfill(9)
         elif "STI" == instruction.name:
             binary_string = "1011"
             binary_string += f"{int(instruction.SR[1]):b}".zfill(3)
-            binary_string += f"{int(instruction.PCoffset9):b}".zfill(9)
+            binary_string += f"{instruction.PCoffset9.to_integer():b}".zfill(9)
         elif "STR" == instruction.name:
             binary_string = "0111"
             binary_string += f"{int(instruction.SR[1]):b}".zfill(3)
             binary_string += f"{int(instruction.BaseR[1]):b}".zfill(3)
-            binary_string += f"{int(instruction.offset6):b}".zfill(6)
+            binary_string += f"{instruction.offset6.to_integer():b}".zfill(6)
         else:
             binary_string = "1111"
             binary_string += "0000"
@@ -157,7 +159,7 @@ class Simulate:
             instruction.DR = "R" + str(int(binary_string[4:7], 2))
             instruction.SR1 = "R" + str(int(binary_string[7:10], 2))
             if binary_string[10] == "1": # immediate mode
-                instruction.imm5 = str(int(binary_string[11:], 2))
+                instruction.imm5.str = str(int(binary_string[11:], 2))
             else: # not immediate mode
                 instruction.SR2 = "R" + str(int(binary_string[13:], 2))
         elif binary_string[0:4] == "0101":
@@ -165,7 +167,7 @@ class Simulate:
             instruction.DR = "R" + str(int(binary_string[4:7], 2))
             instruction.SR1 = "R" + str(int(binary_string[7:10], 2))
             if binary_string[10] == "1": # immediate mode
-                instruction.imm5 = str(int(binary_string[11:], 2))
+                instruction.imm5.str = str(int(binary_string[11:], 2))
             else: #not immediate mode
                 instruction.SR2 = "R" + str(int(binary_string[13:], 2))
 
@@ -177,13 +179,13 @@ class Simulate:
                 instruction.name += "Z"
             if 'P' in instruction.name or instruction.name == 'BR':
                 instruction.name = "P"
-            instruction.PCoffset9 = str(int(binary_string[7:], 2))
+            instruction.PCoffset9.str = str(int(binary_string[7:], 2))
         elif binary_string[0:4] == "1100":
             instruction.name = "JMP"
             instruction.BaseR = str(int(binary_string[7:10], 2))
         elif binary_string[0:4] == "0100" and binary_string[4] == '1':
             instruction.name = "JSR"
-            instruction.PCoffset11 = str(int(binary_string[5:], 2))
+            instruction.PCoffset11.str = str(int(binary_string[5:], 2))
 
         elif binary_string[0:4] == "0100" and binary_string[4] == '0':
             instruction.name = "JSRR"
@@ -192,23 +194,23 @@ class Simulate:
         elif binary_string[0:4] == "0010":
             instruction.name = "LD"
             instruction.DR = "R" + str(int(binary_string[4:7], 2))
-            instruction.PCoffset9 = str(int(binary_string[7:], 2))
+            instruction.PCoffset9.str = str(int(binary_string[7:], 2))
             
         elif binary_string[0:4] == "1010":
             instruction.name = "LDI"
             instruction.DR = "R" + str(int(binary_string[4:7], 2))
-            instruction.PCoffset9 = str(int(binary_string[7:], 2))
+            instruction.PCoffset9.str = str(int(binary_string[7:], 2))
 
         elif binary_string[0:4] == "0110":
             instruction.name = "LDR"
             instruction.DR = "R" + str(int(binary_string[4:7], 2))
             instruction.BaseR = "R" + str(int(binary_string[7:10], 2))
-            instruction.offset6 = str(int(binary_string[10:], 2))
+            instruction.offset6.str = str(int(binary_string[10:], 2))
             
         elif binary_string[0:4] == "1110":
             instruction.name = "LEA"
             instruction.DR = "R" + str(int(binary_string[4:7], 2))
-            instruction.PCoffset9 = str(int(binary_string[7:], 2))
+            instruction.PCoffset9.str = str(int(binary_string[7:], 2))
 
         elif binary_string[0:4] == "1001":
             instruction.name = "NOT"
@@ -224,35 +226,33 @@ class Simulate:
         elif binary_string[0:4] == "0011":
             instruction.name = "ST"
             instruction.SR = "R" + str(int(binary_string[4:7], 2))
-            instruction.PCoffset9 = str(int(binary_string[7:], 2))
+            instruction.PCoffset9.str = str(int(binary_string[7:], 2))
             
         elif binary_string[0:4] == "1011":
             instruction.name = "STI"
             instruction.SR = "R" + str(int(binary_string[4:7], 2))
-            instruction.PCoffset9 = str(int(binary_string[7:], 2))
+            instruction.PCoffset9.str = str(int(binary_string[7:], 2))
             
         elif binary_string[0:4] == "0111":
             instruction.name = "STR"
             instruction.SR = "R" + str(int(binary_string[4:7], 2))
             instruction.BaseR = "R" + str(int(binary_string[7:10], 2))
-            instruction.offset6 = str(int(binary_string[10:], 2))
+            instruction.offset6.str = str(int(binary_string[10:], 2))
 
 
         # Its a TRAP
         elif binary_string[0:4] == "1111":
-            instruction.name = "TRAPX" + f"{int(instruction.name[8:], 2):x}"
+            instruction.name = "TRAPX" + f"{int(binary_string[8:], 2):x}"
         return instruction
 
     def convert_file_to_memory(self):
         self.lines = self.read_in_file()
         for index, line in enumerate(self.lines):
-            line = self.remove_comment(line)
             if self.is_instruction(line):
                 self.memory[self.STARTING_ADDRESS + index] = self.instruction_to_bin(self.parse_instruction(line))
 
     def remove_comment(self, line):
-        line.split(';')[0]
-        return line
+        return line.split(';')[0]
 
     def is_instruction(self, line):
         parts_of_line = line.split(',')
@@ -269,7 +269,6 @@ class Simulate:
             second_half = parts_of_line[1].split(',')
         parts_of_line = first_half + second_half
         parts_of_line = [x.upper().rstrip().lstrip() for x in parts_of_line]
-
         instruction.name = parts_of_line[0]
         if instruction.name == "ADD" or instruction.name == "AND":
             instruction.DR = parts_of_line[1]
@@ -277,25 +276,25 @@ class Simulate:
             if 'R' in parts_of_line[3]:
                 instruction.SR2 = parts_of_line[3]
             else:
-                instruction.imm5 = parts_of_line[3]
+                instruction.imm5.str = parts_of_line[3]
 
         elif "BR" in instruction.name:
-            instruction.PCoffset9 = parts_of_line[1]
+            instruction.PCoffset9.str = parts_of_line[1]
 
         elif instruction.name == "JMP" or instruction.name == "JSRR":
             instruction.BaseR = parts_of_line[1]
 
         elif instruction.name == "JSR":
-            instruction.PCoffset11 = parts_of_line[1]
+            instruction.PCoffset11.str = parts_of_line[1]
 
         elif instruction.name == "LD" or instruction.name == "LDI" or instruction.name == "LEA":
             instruction.DR = parts_of_line[1]
-            instruction.PCoffset9 = parts_of_line[2]
+            instruction.PCoffset9.str = parts_of_line[2]
 
         elif instruction.name == "LDR":
             instruction.DR = parts_of_line[1]
             instruction.BaseR = parts_of_line[2]
-            instruction.offset6 = parts_of_line[3]
+            instruction.offset6.str = parts_of_line[3]
         
         elif instruction.name == "NOT":
             instruction.DR = parts_of_line[1]
@@ -303,12 +302,12 @@ class Simulate:
 
         elif instruction.name == "ST" or instruction.name == "STI":
             instruction.SR = parts_of_line[1]
-            instruction.PCoffset9 = parts_of_line[2]
+            instruction.PCoffset9.str = parts_of_line[2]
 
         elif instruction.name == "STR":
             instruction.SR = parts_of_line[1]
             instruction.BaseR = parts_of_line[2]
-            instruction.offset6 = parts_of_line[3]
+            instruction.offset6.str = parts_of_line[3]
         
         instruction.fix_offsets()
         return instruction
@@ -344,15 +343,15 @@ class Simulate:
             dict_of_instructions[instruction.name](instruction)
         except KeyError:
             if instruction.name == "GETC":
-                self.trap_20()
+                self.trap_20(instruction)
             elif instruction.name == "OUT":
-                self.trap_21()
+                self.trap_21(instruction)
             elif instruction.name == "PUTS":
-                self.trap_22()
+                self.trap_22(instruction)
             elif instruction.name == "IN":
-                self.trap_23()
+                self.trap_23(instruction)
             elif instruction.name == "HALT":
-                self.trap_25()
+                self.trap_25(instruction)
             elif "BR" in instruction.name:
                 self.br_instruction(instruction)
         
@@ -361,7 +360,7 @@ class Simulate:
         if instruction.imm5 == "":
             self.register_values[instruction.DR] = self.register_values[instruction.SR1] + self.register_values[instruction.SR2]
         else:
-            self.register_values[instruction.DR] = self.register_values[instruction.SR1] + int(instruction.imm5)
+            self.register_values[instruction.DR] = self.register_values[instruction.SR1] + instruction.imm5.to_integer()
 
     def and_instruction(self, instruction):
         if instruction.imm5 == "":
@@ -388,14 +387,13 @@ class Simulate:
         self.register_values[instruction.DR] = self.memory[self.program_counter + instruction.PCoffset9.to_integer()]
 
     def ldi_instruction(self, instruction):
-        self.register_values[instruction.DR] = self.memory[self.memory[self.program_counter + instruction.PCoffset9]]
+        self.register_values[instruction.DR] = self.memory[self.memory[self.program_counter + instruction.PCoffset9.to_integer()]]
 
     def ldr_instruction(self, instruction):
         self.register_values[instruction.DR] = self.memory[instruction.BaseR + instruction.offset6.to_integer()]
 
     def lea_instruction(self, instruction):
-        self.register_values[instruction.DR] = self.memory[instruction.PCoffset9 + self.program_counter]
-
+        self.register_values[instruction.DR] = instruction.PCoffset9.to_integer() + self.program_counter
     def not_instruction(self, instruction):
         self.register_values[instruction.DR] = ~self.register_values[instruction.SR1]
 
@@ -406,31 +404,36 @@ class Simulate:
         pass
 
     def st_instruction(self, instruction):
-        self.memory[self.program_counter + instruction.PCoffset9.to_integer()] = self.register_values[instruction.SR]
+        self.memory[self.program_counter + instruction.PCoffset9.to_integer()] = f"{self.register_values[instruction.SR]:b}".zfill(16)
 
     def sti_instruction(self, instruction):
-        self.memory[self.memory[self.program_counter + instruction.PCoffset9]] = self.register_values[instruction.SR]
+        self.memory[self.memory[self.program_counter + instruction.PCoffset9.to_integer()]] = f"{self.register_values[instruction.SR]:b}".zfill(16)
 
     def str_instruction(self, instruction):
-        self.memory[instruction.BaseR + instruction.offset6.to_integer()] = self.register_values[instruction.SR]
+        self.memory[instruction.BaseR + instruction.offset6.to_integer()] = f"{self.register_values[instruction.SR]:b}".zfill(16)
 
-    def trap_20(self):
+    def trap_20(self, instruction):
         self.register_values["R0"] = ord(Getch._GetchWindows())
 
-    def trap_21(self):
-        print(chr(self.register_values["R0"], end=""))
+    def trap_21(self, instruction):
+        print(chr(self.register_values["R0"]), end="", flush=True)
 
-    def trap_22(self):
+    def trap_22(self, instruction):
         address = self.register_values["R0"]
-        while self.memory[address] != 0:
-            print(chr(self.memory[address]), end="")
+        while self.memory[address] != "0"*16:
+            print(chr(int(self.memory[address], 2)), end="", flush=True)
             address += 1
 
-    def trap_23(self):
+    def trap_23(self, instruction):
         self.register_values["R0"] = ord(Getch._GetchWindows())
         print(chr(self.register_values["R0"]))
 
-    def trap_25(self):
-        sys.exit(0)
+    def trap_25(self, instruction):
+        print("\n----- Halting the processor -----")
+        self.halt = True
 
-parser = Simulate("filename.txt")
+    def run(self):
+        self.convert_file_to_memory()
+
+        while not self.halt:
+            self.calculate_instruction()

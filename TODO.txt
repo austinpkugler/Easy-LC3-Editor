@@ -1,0 +1,3 @@
+LIMITATIONS:
+    is soley a 1-1 machine language conversion. Does not have any fancy stuff
+    only works on windows
