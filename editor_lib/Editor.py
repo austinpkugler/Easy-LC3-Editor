@@ -138,7 +138,8 @@ class Editor():
                   and name of your choice.\n
 5. Ctrl+Shift+X | Saves the file you currently have open and closes the Editor.\n
 6. Ctrl+Shift+L | Opens the shortcuts list that you are currently viewing.\n
-7. Ctrl+Shift+H | Opens the user guide.
+7. Ctrl+Shift+H | Opens the user guide.\n
+8. Ctrl+r       | Runs the interpreter on the open file.
         ''')
         shortcuts_textarea.config(state='disabled')
         shortcuts_window.mainloop()
