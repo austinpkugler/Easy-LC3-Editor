@@ -14,10 +14,11 @@ class Instruction:
         self.PCoffset9 = SignedBinary()
         self.PCoffset11 = SignedBinary()
         self.offset6 = SignedBinary()
+        self.trapvec8 = SignedBinary()
 
 
     def fix_offsets(self):
-        for var in ["imm5", "PCoffset9", "offset6"]:
+        for var in ["imm5", "PCoffset9", "offset6", "trapvec8"]:
             if self.__dict__[var].str != "":
                 if self.__dict__[var].str[0] == "#":
                     self.__dict__[var].str = self.__dict__[var].str[1:]

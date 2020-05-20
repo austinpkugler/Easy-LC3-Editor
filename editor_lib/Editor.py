@@ -125,15 +125,20 @@ class Editor():
         shortcuts_textarea = tk.Text(shortcuts_window, font=font_specs)
         shortcuts_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         shortcuts_textarea.tag_configure('bold', font='Courier 16 bold')
-        shortcuts_textarea.insert(1.0, 'Shortcuts List', 'bold')
+        shortcuts_textarea.insert(1.0, 'Shortcuts List\n', 'bold')
         shortcuts_textarea.insert(2.0, '''
-Ctrl+N | Saves and exits the currently opened file and then creates a new blank file. By default this file is named 'untitled.asm'.
-Ctrl+O | Opens your operating system's file explorer so that you can navigate to a file you would like to open. Double-clicking the file will open it in the editor.
-Ctrl+S | Saves the file that is currently opened. If the currently opened file has never been saved before, then it must be named and manually saved by the user.
-Ctrl+Shift+S | Allows you to save the currently opened file with a location and name of your choice.
-Ctrl+Shift+X | Saves the file you currently have open and closes the Editor.
-Ctrl+Shift+L | Opens the shortcuts list that you are currently viewing.
-Ctrl+Shift+H | Opens the user guide.
+1. Ctrl+N       | Saves and exits the currently opened file and then creates a new blank 
+                  file. By default this file is named 'untitled.asm'.\n
+2. Ctrl+O       | Opens your operating system's file explorer so that you can navigate 
+                  to a file you would like to open. Double-clicking the file will open 
+                  it in the editor.\n
+3. Ctrl+S       | Saves the file that is currently opened. If the currently opened file 
+                  has never been saved before, then it must be named and manually saved.\n
+4. Ctrl+Shift+S | Allows you to save the currently opened file with a location 
+                  and name of your choice.\n
+5. Ctrl+Shift+X | Saves the file you currently have open and closes the Editor.\n
+6. Ctrl+Shift+L | Opens the shortcuts list that you are currently viewing.\n
+7. Ctrl+Shift+H | Opens the user guide.
         ''')
         shortcuts_textarea.config(state='disabled')
         shortcuts_window.mainloop()
@@ -144,15 +149,21 @@ Ctrl+Shift+H | Opens the user guide.
         guide_window.geometry('1200x700')
         guide_window.title('User Guide')
         guide_textarea = tk.Text(guide_window, font=font_specs)
+        
         guide_textarea.tag_configure('heading1', font='Courier 16 bold')
-        guide_textarea.insert(1.0, 'User Guide', 'heading1')
+        guide_textarea.insert(1.0, 'User Guide\n', 'heading1')
         guide_textarea.insert(2.0, '''
-The Easy LC3 Editor allows Little Computer 3 assembly language to be written and interpreted, with a few key differences. One such
-difference is the removal of the .ORIG and .END statements from the LC-3 syntax. Instead, programs simulated with the Editor always
-originate at address x3000 and the simulator will interpret the entirety of the .asm file as LC-3 code. There is a minor syntax difference
-from traditional LC-3 when using TRAP instructions. Instead of writing TRAP xnn, users should instead write TRAPxnn. For example, a call to
-trap 23 should be written as TRAPx23. Another key difference is the ability to have immediate values of sizes unrestricted by low bit
-allocations. Finally, the use of labels is not implemented; instead, immediate values can be used in their place due to their unrestricted size.''')
+The Easy LC3 Editor offers many features, including a custom interpreter and
+editor for Little Computer 3 Assembly. However, there are a few small differences
+from traditional LC-3 Assembly syntax:\n
+1. The Easy LC3 Editor\'s assembly interpreter does not require the use of .ORIG
+   or .END statements.\n
+2. Instead, the first line of assembly code will be automatically loaded into 
+   address x3000.\n
+3. Immediate values are unrestricted by a small bit limit.\n
+4. Because of this, labels are not used to store large values that could 
+   otherwise be immediate.\n''')
+        guide_textarea.config(state=tk.DISABLED)
         guide_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def display_about(self):
@@ -162,12 +173,15 @@ allocations. Finally, the use of labels is not implemented; instead, immediate v
         about_window.title('About')
         about_textarea = tk.Text(about_window, font=font_specs)
         about_textarea.tag_configure('heading1', font='Courier 16 bold')
-        about_textarea.insert(1.0, 'About', 'heading1')
+        about_textarea.insert(1.0, 'About\n', 'heading1')
         about_textarea.insert(2.0, '''
-The Easy LC3 Editor was created as a final project for CS-155 at North Idaho College by Austin Kugler and Hayden Carroll. It is written
-in Python 3 and utilizes the Tkinter graphics library for the frontend. The Easy LC3 Editor allows full editing of Little Computer 3 assembly
-language files. Additionally, LC3 assembly can be simulated directly from the editor via an interpreter also developed in Python 3. The
-interpreter includes a virtual implementation of memory.''')
+The Easy LC3 Editor was created as a final project for CS-155 at North Idaho 
+College by Austin Kugler and Hayden Carroll. It is written in Python 3 and 
+utilizes the Tkinter graphics library for the frontend. The Easy LC3 Editor
+allows full editing of Little Computer 3 assembly language files.\n
+Additionally, LC3 assembly can be simulated directly from the editor via an 
+interpreter also developed in Python 3. The interpreter includes a virtual 
+implementation of memory.''')
         about_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def bind_keys(self):
