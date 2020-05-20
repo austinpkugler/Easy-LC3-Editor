@@ -1,6 +1,7 @@
 # Easy-LC3-Editor
 ## Description
 The Easy LC3 Editor was created by Hayden Carroll and Austin Kuglers as a final project for CS-155 at North Idaho College.
+It includes a text editor for LC-3 Assembly code and an LC-3 interpreter.
 A video showcasing the Project can be found here: https://youtu.be/nO7khyVCksc
 
 ## Getting Started
