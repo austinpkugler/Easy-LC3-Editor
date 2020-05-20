@@ -12,7 +12,7 @@ class Editor():
 
     def __init__(self, master):
         # Font variables for main text area
-        font_specs = ('Source Code Pro', 14)
+        font_specs = ('Courier', 14)
 
         # Master window variables
         master.title('Easy LC3 Editor') # Sets the system tab title
@@ -118,13 +118,13 @@ class Editor():
             self.master.destroy()
 
     def display_shortcuts(self, *args):
-        font_specs = ('Times', 16)
+        font_specs = ('Courier', 16)
         shortcuts_window = tk.Tk()
         shortcuts_window.geometry('1200x700')
         shortcuts_window.title('Shortcuts')
         shortcuts_textarea = tk.Text(shortcuts_window, font=font_specs)
         shortcuts_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        shortcuts_textarea.tag_configure('bold', font='Times 16 bold')
+        shortcuts_textarea.tag_configure('bold', font='Courier 16 bold')
         shortcuts_textarea.insert(1.0, 'Shortcuts List', 'bold')
         shortcuts_textarea.insert(2.0, '''
 Ctrl+N | Saves and exits the currently opened file and then creates a new blank file. By default this file is named 'untitled.asm'.
@@ -139,12 +139,12 @@ Ctrl+Shift+H | Opens the user guide.
         shortcuts_window.mainloop()
 
     def display_guide(self, *args):
-        font_specs = ('Times', 16)
+        font_specs = ('Courier', 16)
         guide_window = tk.Tk()
         guide_window.geometry('1200x700')
         guide_window.title('User Guide')
         guide_textarea = tk.Text(guide_window, font=font_specs)
-        guide_textarea.tag_configure('heading1', font='Times 16 bold')
+        guide_textarea.tag_configure('heading1', font='Courier 16 bold')
         guide_textarea.insert(1.0, 'User Guide', 'heading1')
         guide_textarea.insert(2.0, '''
 The Easy LC3 Editor allows Little Computer 3 assembly language to be written and interpreted, with a few key differences. One such
@@ -156,12 +156,12 @@ allocations. Finally, the use of labels is not implemented; instead, immediate v
         guide_textarea.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
     def display_about(self):
-        font_specs = ('Times', 16)
+        font_specs = ('Courier', 16)
         about_window = tk.Tk()
         about_window.geometry('1200x700')
         about_window.title('About')
         about_textarea = tk.Text(about_window, font=font_specs)
-        about_textarea.tag_configure('heading1', font='Times 16 bold')
+        about_textarea.tag_configure('heading1', font='Courier 16 bold')
         about_textarea.insert(1.0, 'About', 'heading1')
         about_textarea.insert(2.0, '''
 The Easy LC3 Editor was created as a final project for CS-155 at North Idaho College by Austin Kugler and Hayden Carroll. It is written
