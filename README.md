@@ -1,6 +1,6 @@
 # Easy-LC3-Editor
 ## Description
-The Easy LC 3 Editor was created by Hayden Carroll and Austin Kuglers as a final project for CS-155 at North Idaho College.
+The Easy LC3 Editor was created by Hayden Carroll and Austin Kuglers as a final project for CS-155 at North Idaho College.
 
 ## Getting Started
 This Project requires Python 3 to be installed and added to PATH.
