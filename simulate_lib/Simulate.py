@@ -1,8 +1,8 @@
 import sys
 
 from simulate_lib import Getch
-from simulate_lib.instruction import Instruction
-from simulate_lib.signed_binary import SignedBinary
+from simulate_lib.Instruction import Instruction
+from simulate_lib.SignedBinary import SignedBinary
 
 class Simulate:
     def __init__(self, fileName):
@@ -38,7 +38,7 @@ class Simulate:
 
     def populate_addresses(self):
         for _ in range(2**16): # looping through addresses
-            self.memory.append("0"*16) #populates memory address with 16 0's
+            self.memory.append("0" * 16) #populates memory address with 16 0's
 
     def instruction_to_bin(self, instruction):
         binary_string = ""

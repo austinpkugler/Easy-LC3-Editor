@@ -1,4 +1,4 @@
-import tkinter as tk    
+import tkinter as tk
 import datetime
 
 # Class for live-updating text in the bottom left of the app (line number etc.)

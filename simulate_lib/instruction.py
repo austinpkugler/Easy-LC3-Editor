@@ -1,4 +1,4 @@
-from simulate_lib.signed_binary import SignedBinary
+from simulate_lib.SignedBinary import SignedBinary
 # variables in Instruction class are based off of LC3_instructions_guide.png
 # instrucions that do not require different parts should have the unrequired parts as ""
 class Instruction:

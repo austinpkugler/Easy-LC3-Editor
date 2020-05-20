@@ -1,5 +1,4 @@
-
-#accepts a sign-padded binary string, and converts it to a signed binary value
+# Accepts a sign-padded binary string, and converts it to a signed binary value.
 class SignedBinary:
     def __init__(self, string=""):
         self.str = string
